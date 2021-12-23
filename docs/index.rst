@@ -3,7 +3,7 @@ Welcome to Submitty ARC's documentation!
 
 This guide contains two main sections, one for the maintainer and another for
 the instructor/user of Submitty. We keep in this guide what's particular for UCL/ARC
-installation, for the general usage (interface) refer to the `official Submitty documentation`.
+installation, for the general usage (interface) refer to the `official Submitty documentation`_.
 
 .. toctree::
    :maxdepth: 2
