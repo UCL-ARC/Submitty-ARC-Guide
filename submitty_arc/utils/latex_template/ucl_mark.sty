@@ -1,0 +1,265 @@
+\ProvidesPackage{ucl_mark}
+% Packages
+% for arrows
+% \usepackage{amssymb}
+\usepackage{authblk}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage{colortbl}
+\usepackage[usenames,dvipsnames,table]{xcolor}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage[labelsep=period,justification=justified]{caption}
+\usepackage{lastpage}
+\usepackage{xifthen}
+\usepackage{todonotes}
+\usepackage[hmargin=1.8cm,vmargin=2.2cm]{geometry}
+% Needed to handle text alignment
+\usepackage{ragged2e}
+% Needed to configure page layout
+\usepackage{geometry}
+% Needed to change line spacing in specific environment
+\usepackage{setspace}
+% Needed to use \if-\then-\else statement
+\usepackage{xifthen}
+% Needed to make fixed length table
+%\usepackage{array}
+%\usepackage{tikzsymbols}
+%\usepackage{arev}
+%\usepackage{fontawesome}
+% to know how long strings are
+\usepackage{xstring}
+\usepackage[pscoord]{eso-pic}% The zero point of the coordinate systemis the lower left corner of the page (the default).
+
+% To make stars and tooltips
+\usepackage{tikz}
+\usepackage{pdfcomment}
+\usetikzlibrary{shapes.geometric}
+
+
+
+% Define the versionDate and flogo commands
+\newcommand{\ucldept}{UCL DEPARTMENT OF \uppercase{\VAR{ meta.department }}\vspace{1.5cm}}
+\newcommand{\ucllogo}{\includegraphics[width=\paperwidth]{uclbanner-outline}}
+
+% Section heading styles
+\usepackage[compact]{titlesec}
+
+\titleformat*{\section}{\Large\usefont{OT1}{phv}{b}{n}\color{darkgray}}
+\titleformat*{\subsection}{\large\usefont{OT1}{phv}{b}{n}\color{MidnightBlue}}
+\titleformat*{\subsubsection}{\large\usefont{OT1}{phv}{b}{n}\color{MidnightBlue}}
+
+% Section heading spacing (reduced space below headings)
+\titlespacing\section{0pt}{3.5ex plus 1.2ex minus .2ex}{0ex}
+\titlespacing\subsection{0pt}{3.25ex plus 1.2ex minus .2ex}{0ex}
+\titlespacing\subsubsection{0pt}{3.25ex plus 1.2ex minus .2ex}{0ex}
+
+% Caption style
+\captionsetup{labelfont={color=red,bf},textfont={color=black,bf}}
+
+% Table style
+\definecolor{DarkKhaki}{rgb}{0.74,0.72,0.42}
+\colorlet{tableheadcolor}{DarkKhaki} % Table header colour = 25% gray
+\newcommand{\header}{\rowcolor{tableheadcolor}} %
+\colorlet{tablerowcolor}{DarkKhaki!50} % Table row separator colour = 10% gray
+\newcommand{\row}{\rowcolor{tablerowcolor}} %
+\newenvironment{tabledata}[1][1]{%
+  \renewcommand*{\extrarowheight}{0.1cm}%
+  \tabular%
+}{%
+  \endtabular
+}
+
+% Define a title note command
+\newcommand\titlenote[1]{\renewcommand\@titlenote{#1}}
+\newcommand\@titlenote{}
+
+% Column separation
+\setlength{\columnsep}{0.25in}
+
+% Page margins, headers and footers
+%\pagestyle{fancy}
+\newcommand{\oddoffset}{18mm}
+\fancyhf{}
+\AtBeginDocument{%
+\fancyhfoffset[LO]{\oddoffset}%
+\fancyhfoffset[RO]{\oddoffset}%
+\rhead{\ucllogo}
+\lhead{\hspace*{15mm}\ucldept}
+}
+\setlength\parindent{0in}
+%\setlength\parskip{0.1in}
+\setlength\headheight{31.5pt}
+%\renewcommand{\footrulewidth}{1pt}
+% \chead{}
+
+
+% \lfoot{}
+% \cfoot{}
+% \rfoot{\footnotesize Page \thepage\ of \pageref{LastPage}}
+%
+
+
+%
+\renewenvironment{abstract}{%
+\usefont{OT1}{phv}{m}{n}
+\hfill\begin{minipage}{\textwidth}
+\rule{\textwidth}{1pt}\\ \textcolor{Orange}{\textbf{Description:}}}
+{\par\noindent\rule{\textwidth}{1pt}\end{minipage}}
+%
+\makeatletter
+\renewcommand\@maketitle{%
+\begin{minipage}{0.95\textwidth}
+\vskip 2em
+\let\footnote\thanks
+{\fontsize{20}{22}\usefont{OT1}{phv}{b}{n} \@title } \par
+{\usefont{OT1}{phv}{m}{n} \textcolor{Orange}{\@titlenote}}
+\vskip 1.5em
+{\@author \par}
+\end{minipage}
+\vskip 1em \par
+}
+\makeatother
+\renewcommand\Authfont{\fontsize{16}{18}\usefont{OT1}{phv}{b}{n}}
+\renewcommand\Affilfont{\fontsize{10}{12}\usefont{OT1}{phv}{b}{n}}%
+
+\makeatletter
+\newcommand\maketable[1]{%
+  \begin{minipage}{0.95\textwidth}
+    \vskip 2em
+    \begin{tabular}{lp{100mm}}
+      \textbf{Module Code:}         & \uppercase{ \VAR{ meta['course_code'] } } \\  % & $module_code$ \\
+      \textbf{Module Title:}        & \VAR{ meta['course'] } \\  % & $module_title$ \\
+      \textbf{Lecturer(s):}         & \VAR{ ' \\newline '.join(meta['lecturers']) } \\  % & $lecturer$ \\
+      \textbf{Coursework Title:}    & \VAR{ meta['title'] } \\  % & $coursework_title$ \\
+      \textbf{Date Handed out:}     & \VAR{ meta['dates']['handed'] } \\  % & $date_out$ \\
+      \textbf{Coursework Deadline:} & \VAR{ meta['dates']['deadline'] } \\  % & $deadline$ \\
+      \textbf{Submission Id:}       & #1 \\  % & $deadline$ \\
+    \end{tabular}
+\end{minipage}
+\vskip 1em \par
+}
+\makeatother
+
+\newcommand{\acvSectionContentTopSkip}{2.5mm}
+% For elements of entry
+\newcommand*{\entrytitlestyle}[1]{{\fontsize{10pt}{1em}\bodyfont\bfseries\color{black} #1}}
+\newcommand*{\entrypositionstyle}[1]{{\fontsize{8pt}{1em}\bodyfont\scshape\color{gray} #1}}
+\newcommand*{\entrydatestyle}[1]{{\fontsize{8pt}{1em}\bodyfontlight\slshape\color{gray} #1}}
+\newcommand*{\entrylocationstyle}[1]{{\fontsize{9pt}{1em}\bodyfontlight\slshape\color{RoyalPurple} #1}}
+\newcommand*{\descriptionstyle}[1]{{\fontsize{9pt}{1em}\bodyfontlight\upshape\color{black} #1}}
+\newcommand*{\commentstyle}[1]{{\fontsize{9pt}{1em}\bodyfontlight\upshape\color{RoyalPurple}\it #1}}
+% Use to align an element of tabular table
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+% Use to execute conditional statements by checking empty string
+\newcommand*{\ifempty}[3]{\ifthenelse{\isempty{#1}}{#2}{#3}}
+\newcommand*{\bodyfont}{}
+\newcommand*{\bodyfontlight}{}
+
+
+\newcounter{points}
+\newcommand*{\points}[1]{\addtocounter{points}{#1}#1}
+\newcommand*{\totalpoints}{\thepoints}% Or simply use `\thepoints` directly.
+\def\isnum#1{%
+  \if!\ifnum9<1#1!\else_\fi
+    \ifempty{#1}{}{\points{#1}}\else#1\fi}
+\newcommand*{\zpoints}[1]{\isnum{#1}}
+
+\newenvironment{grading}{%
+  \vspace{\acvSectionContentTopSkip}
+  \begin{center}
+}{%
+  \end{center}
+}
+
+\newcommand*{\gradingtitle}[6]{%
+  \vspace{-2.0mm}
+  \setlength\tabcolsep{0pt}
+  \setlength{\extrarowheight}{0pt}
+  % \StrLen{#3}[\mystringlen]
+  % \def*\columnLength{\ifthenelse{\mystringlen > 3}{5.5cm}{4.5cm}}
+  \ifempty{#6}{
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - 4.5cm} R{4.5cm}}}{
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - 3cm} L{3.3cm}}}
+      \entrytitlestyle{#1} & \entrylocationstyle{#2}/\entrydatestyle{#3} \\
+      \multicolumn{2}{L{\textwidth}}{ \vspace*{0.5mm}\descriptionstyle{#4}} \\
+      \multicolumn{2}{L{\textwidth}}{\descriptionstyle{#5}}
+  \end{tabular*}%
+
+}
+% Define an environment for cvitems(for cventry)
+\newenvironment{gradingitems}{%
+  %\vspace{-4.0mm}
+  \begin{justify}
+  % \begin{itemize}%[leftmargin=2ex, nosep, noitemsep]
+  %   \setlength{\parskip}{0pt}
+  %   \renewcommand{\labelitemi}{$\bullet$}
+}{%
+  % \end{itemize}
+  \end{justify}
+  %\vspace{-4.0mm}
+}
+
+\newcommand*{\gradeit}[5]{
+  \setcounter{points}{0}
+  \vspace{1.0mm}
+  %\setlength\tabcolsep{0pt}
+  % \setlength{\extrarowheight}{0pt}
+  % \begin{tabular*}{0.5\textwidth}{@{\extracolsep{\fill}} L{0.5\textwidth - 10cm} C{2cm} C{2cm} C{2cm}}
+  \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}} L{0.78\textwidth} C{1cm} C{1cm} R{1cm}}
+      \descriptionstyle{#1} & \entrylocationstyle{\zpoints{#2}} & \entrylocationstyle{\zpoints{#3}}
+    & \entrylocationstyle{\bf #4} \\
+    \multicolumn{1}{L{\textwidth - 4cm}}{\commentstyle{#5}} & & &
+  \end{tabular*}%
+}
+
+\newcommand*{\ipacquestion}[6]{%
+  \vspace{-2.0mm}
+  \setlength\tabcolsep{0pt}
+  \setlength{\extrarowheight}{0pt}
+  % \StrLen{#3}[\mystringlen]
+  % \def*\columnLength{\ifthenelse{\mystringlen > 3}{5.5cm}{4.5cm}}
+  \ifempty{#6}{
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - 4.5cm} R{4.5cm}}}{
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} L{\textwidth - 3cm} L{3.3cm}}}
+  \entrytitlestyle{#1} & \makestars{#2}{#3}{#4} \\
+  \multicolumn{2}{L{\textwidth}}{ \vspace*{0.5mm}\descriptionstyle{#5}} \\
+  \multicolumn{2}{L{\textwidth}}{\descriptionstyle{#6}}
+    \end{tabular*}%
+
+}
+
+% From: https://tex.stackexchange.com/a/515729/10934
+% Use: \Stars{3.4} to get 5 stars with 3.4 filled
+% Use: \Stars[red,draw=green]{3} to change the edges and filling colours.
+\newcommand{\Stars}[2][fill=red!50!yellow,draw=orange]{\begin{tikzpicture}[baseline=-0.35em, #1]
+    \foreach \X in {1,...,5}
+             {\pgfmathsetmacro{\xfill}{min(1,max(1+#2-\X,0))}
+               \path (\X*1.1em,0)
+               node[star,draw,star point height=0.25em,minimum size=1em,inner sep=0pt,
+                 path picture={\fill (path picture bounding box.south west)
+                   rectangle  ([xshift=\xfill*1em]path picture bounding box.north west);}]{};
+             }
+  \end{tikzpicture}
+}
+
+\newcommand*{\makestars}[3]{
+  \pdftooltip[]
+             {\Stars{#1}}
+             {Obtained: #1, Self: #2, Group average: #3}
+}
+
+
+
+\newcommand{\placetextbox}[3]{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}
+  \setbox0=\hbox{#3}% Put <stuff> in a box
+  \AddToShipoutPictureFG*{% Add <stuff> to current page foreground
+    \put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{\begin{tabular}{c}#3\end{tabular}}}}%
+  }%
+}

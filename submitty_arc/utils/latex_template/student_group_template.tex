@@ -1,0 +1,63 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{ucl_mark}
+\usepackage[utf8]{inputenc}
+%\usepackage[numbers]{natbib}
+\usepackage{multirow}
+
+
+\begin{document}
+
+\title{\textit{\VAR{meta['course']}}}
+\author{}
+\maketitle
+\thispagestyle{fancy}
+
+\maketable{ \VAR{meta['student']} (\VAR{meta['group']}) }
+\input{assignment_details}
+
+\placetextbox{0.85}{0.8}{{\Large IPAC Score:} \\
+  \entrylocationstyle{\Huge \VAR{'{0:0.2f}'.format(total)} }}
+
+\vspace{0.6cm}
+
+\textbf{Note:} Stars show the average marks received for each of the assessment
+criterion. Hover with the mouse on the stars to see the exact value and how it
+compares with your self evaluation and the group average.
+
+\begin{grading}
+
+  \BLOCK{ for question in questions.values() }
+  \ipacquestion{ \VAR{ question.title } }
+  { \VAR{ '{0:0.2f}'.format(question.total) } }
+  { \VAR{ '{0:0.2f}'.format(question.oneself) } }
+  { \VAR{ '{0:0.2f}'.format(question.group) } }
+  { \VAR{ question.description } } % Description of the full section
+  { \VAR{ question.instructor_comments } }
+
+  %\rule{\textwidth}{1pt}\\
+  \vspace{5mm}
+  \BLOCK{ endfor }
+
+\end{grading}
+
+\clearpage
+
+\BLOCK{ if feedbacks }
+\vspace*{.5cm}
+\entrytitlestyle{Feedback from your team members}
+\begin{itemize}
+\BLOCK{ for feedback in feedbacks }
+\item \commentstyle{ \VAR{feedback} }
+\BLOCK{ endfor }
+\end{itemize}
+\BLOCK{ endif }
+
+\BLOCK{ if selffeedback }
+\vspace*{.5cm}
+\entrytitlestyle{Your self evaluation}
+
+\commentstyle{ \VAR{selffeedback} }
+\BLOCK{ endif }
+
+\thispagestyle{empty}
+\end{document}

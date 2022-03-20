@@ -17,6 +17,8 @@ import yaml
 
 from ..utils.md2tex import mdcomment2tex
 
+ROOT_PKG = Path(__file__).absolute().parent.parent
+
 def set_jinja_latex_env():
     return jinja2.Environment(block_start_string=r'\BLOCK{',
                               block_end_string='}',
@@ -28,7 +30,7 @@ def set_jinja_latex_env():
                               line_comment_prefix='%#',
                               trim_blocks=True,
                               autoescape=False,
-                              loader=jinja2.FileSystemLoader(Path(__file__).absolute().parent / 'latex_template'))
+                              loader=jinja2.FileSystemLoader(ROOT_PKG / 'utils' / 'latex_template'))
 
 def remove_ta_internal_comments(list_comments):
     '''
@@ -85,10 +87,10 @@ class Question:
 
 class Section:
     def __init__(self, section_dict):
-        self.title = mdcomment2tex(section_dict.get("title", ""))
+        self.title = mdcomment2tex(section_dict.get("title", "").replace("  ", " "))
         self.description = mdcomment2tex(section_dict.get("description", ""))
         self.marks = section_dict.get("marks", 0)
-        self._stitle = section_dict.get("stitle", "")
+        self._stitle = section_dict.get("stitle", "").replace("  ", " ")
         remove_title = section_dict.get("remove", '')
         questions = {q: qval for q, qval in section_dict.items() if "Question" in q}  # So the enumerate only counts questions
         self.Questions = {i: Question(q_val, remove_title) for i, q_val in enumerate(questions.values(), start=1)}
@@ -164,7 +166,8 @@ class Assignment:
         if penalty:
             self.__create_penalty_sect(penalty)
 
-        assert len(auto_results.components) == 1, f"Not all auto results have been used: {auto_results.components=}"
+        auto_components = {qtitle:points for qtitle, points in auto_results.components.items() if points != 0}
+        assert len(auto_components) == 0, f"Not all auto results have been used: {auto_components=}"
         assert len(manual_results.components) == 0, f"Not all manual results have been used: {manual_results.components=} "
         self.overall_comments = manual_results.comments
 
@@ -240,15 +243,21 @@ class Manual_grad:
         self.components = {x["title"]: {'score': x["score"],
                                         'default': x['default_score'],
                                         'comments': [y["note"] for y in x["marks"]],
-                                        'add_points': sum([y["points"] for y in x["marks"]])} for x in assignment["components"]}
+                                        'add_points': sum([y["points"] for y in x["marks"]]),
+                                        'lower_clamp': x['lower_clamp'],
+                                        'upper_clamp': x['upper_clamp'],
+                                        } for x in assignment["components"]
+                           }
         self.__check_manual_addup()
         self.__check_manual_score(json_file)
 
     def __check_manual_addup(self):
         bad_values = {}
         for comp, values in self.components.items():
-            if values['score'] != values['default'] + values['add_points']:
-                bad_values[comp] = f"{values['score']} != {values['default']} + {values['add_points']}"
+            received = values['score']
+            total = values['default'] + values['add_points']
+            if received != min(max(values['lower_clamp'], total), values['upper_clamp']):
+                bad_values[comp] = f"{values['score']} != min( max({values['lower_clamp']}, {values['default']} + {values['add_points']}), {values['upper_clamp']} )"
         if bad_values:
             raise ValueError(f"The following questions for {self.student} have the following incorrect additions:\n{json.dumps(bad_values, indent=4)}")
 
@@ -262,7 +271,7 @@ class Auto_grad:
         with open(json_file) as fjson:
             auto_results = json.load(fjson)
         self.auto_score = auto_results["automatic_grading_total"]
-        self.components = {x["test_name"]: x['points_awarded'] for x in auto_results["testcases"]}
+        self.components = {x["test_name"].replace("  ", " "): x['points_awarded'] for x in auto_results["testcases"]}
         self.__check_auto_score()
 
     def __check_auto_score(self):
@@ -274,6 +283,9 @@ def generate_tex_styles(config, outdir='./'):
     latex_jinja_env = set_jinja_latex_env()
 
     config['meta']['description_tex'] = mdcomment2tex(config['meta']['description'])
+
+    if not Path(outdir).exists():
+        Path(outdir).mkdir()
 
     for template in ['ucl_mark.sty', 'assignment_details.tex']:
         style = latex_jinja_env.get_template(template)
@@ -308,6 +320,9 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     grades = {}
     for i,student_id in enumerate(results_path.iterdir()):
+        # skip if one of the directories is the output directory.
+        if results_path / student_id == Path(outdir):
+            continue
         if student_id.is_dir():
             student = student_id.name
             penalty = penalties_dict.get(student, None)

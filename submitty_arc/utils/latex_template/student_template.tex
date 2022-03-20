@@ -1,0 +1,74 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{ucl_mark}
+\usepackage[utf8]{inputenc}
+%\usepackage[numbers]{natbib}
+\usepackage{multirow}
+
+
+\begin{document}
+
+\title{\textit{\VAR{meta['course']}}}
+\author{}
+\maketitle
+\thispagestyle{fancy}
+
+\maketable{ \VAR{meta['student']} }
+\input{assignment_details}
+
+\placetextbox{0.85}{0.8}{{\Large Total mark:} \\
+  \entrylocationstyle{\Huge \VAR{'{0:0.2f}'.format(total)} }
+                     {\Huge/}\entrydatestyle{\Huge \VAR{meta['marks']} } }
+
+
+\vspace{0.6cm}
+Marking legend:
+
+\framebox[\textwidth][c]{
+  \gradingtitle{Title of the grading section}{points received}{total}
+  {General notes about this particular section}
+  {
+    \begin{gradingitems}
+      \gradeit{section being marked}{auto}{manual}{total}{
+        Feedback about this section \newline
+        Comments here don't necessarily subtract points \newline
+        Automatically graded marks either worked or not. Noted if they had to be
+        run manually.
+      }
+    \end{gradingitems}
+  }{explaining}
+}
+
+\BLOCK{ if feedback }
+\vspace*{.5cm}
+\entrytitlestyle{Overall Feedback}
+\commentstyle{ \VAR{feedback} }
+\BLOCK{ endif }
+
+\begin{grading}
+
+  \BLOCK{ for section in sections.values() }
+  \gradingtitle{ \VAR{ section.title } }
+  { \VAR{ '{0:0.2f}'.format(section.total) } }
+  { \VAR{ section.marks } }
+  { \VAR{ section.description } } % Description of the full section
+  {
+    \begin{gradingitems}
+      \BLOCK{ for question in section.Questions.values() }
+            {\gradeit{ \VAR{ question.title_tex } }
+               { \VAR{ '{0:0.2f}'.format(question.total_auto) } }
+               { \VAR{ '{0:0.2f}'.format(question.total_manual) } }
+               { \VAR{ '{0:0.2f}'.format(question.total) } }
+               { \VAR{ question.comments } }
+            }
+            \BLOCK{ endfor }
+    \end{gradingitems}
+  }{}
+
+  \rule{\textwidth}{1pt}\\
+  \vspace{5mm}
+  \BLOCK{ endfor }
+
+\end{grading}
+
+\thispagestyle{empty}
+\end{document}
