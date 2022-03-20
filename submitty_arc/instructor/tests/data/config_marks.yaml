@@ -1,0 +1,87 @@
+meta:
+  department: "Fun and games stuff"
+  course: "My super course"
+  course_code: "rsdg0101"
+  lecturers:
+    - Graham Chapman
+    - Eric Idle
+  title: "My question"
+  # Read about multiline strings in yaml files at https://yaml-multiline.info/
+  description: >-
+    Several lines of text,\n
+    containing "double quotes"
+
+    And multiple lines.
+  dates:
+    handed: November 18th, 2020
+    deadline: December 4th, 2020
+  marks: 23
+  manual: 5
+  auto: 3
+  auto_factor: 3
+  manual_factor: 2
+  submitty_type: homework
+  submitty_id: cd1
+sections:
+  git:
+    title: "Version control with git"
+    description: ""
+    marks: 8
+    stitle: "Uncompress, cleaning and setup - GIT: (a) Git repository"
+    remove: "GIT: "
+    Question 1:
+      title:  "GIT: 1. Sensible commit sizes"
+      marks: 2
+      manual: 5
+      auto: 3
+      manual_factor: 2
+    Question 2:
+      title:  "GIT: 2. Appropriate commit messages"
+      marks: 3
+      manual: 5
+      auto: 3
+      manual_factor: 2
+    Question 3:
+      title:  "GIT: 3. Artefacts not included in any commit"
+      marks: 3
+      manual: 5
+      auto: 3
+      manual_factor: 2
+  load:
+    title: "Load the data"
+    description: ""
+    marks: 10
+    remove: "STRUCTURE: 1. Load - "
+    Question 1:
+      title: "STRUCTURE: 1. Load - (a) Using the right library to read it"
+      marks: 5
+      manual: 5
+      auto: 3
+      manual_factor: 2
+    Question 2:
+      title:  "STRUCTURE: 1. Load - (b) Checks the file follows the right schema"
+      marks: 3
+      manual: 5
+      auto: 3
+      manual_factor: 2
+    Question 3:
+      title:  "STRUCTURE: 1. Load - (c) Returns a Python object to be used in the other functions"
+      marks: 2
+      manual: 5
+      auto: 3
+      manual_factor: 2
+  evolution:
+    title: "Evolution of cases by age and population distribution"
+    marks: 5
+    Question 1:
+      title: "STRUCTURE: 2. Evolution of cases - (a) The return object is as required."
+      marks: 5
+      manual: 5
+
+groups:
+  structure:
+    title: "Code Structure"
+    sections:
+      - "load"
+      - "evolution"
+    marks: 15

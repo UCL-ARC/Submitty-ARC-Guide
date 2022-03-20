@@ -1,0 +1,137 @@
+{
+    "user_id": "2681653",
+    "legal_first_name": "Iuqgo",
+    "preferred_first_name": "Iuqgo",
+    "legal_last_name": "Wjfna",
+    "preferred_last_name": "Wjfna",
+    "registration_section": "section1",
+    "rotating_section": null,
+    "default_allowed_late_days": 0,
+    "last_update": "Monday, February 8, 2021",
+    "Homework": [
+        {
+            "id": "cd1",
+            "name": "covid-data",
+            "gradeable_type": "Electronic File",
+            "grade_released_date": "2021-01-20 23:59:59 +0000",
+            "score": 0,
+            "status": "Good",
+            "overall_comments": {
+                "instructor01": "%% Uses `jsonshchema` %%",
+                "instructor02": "- Variable names are not meaningful %% banana = 23 %%"
+            },
+            "autograding_score": 5,
+            "tagrading_score": -4,
+            "note": "This has not been graded yet.",
+            "components": [
+                {
+                    "title": "GIT: 1. Sensible commit sizes",
+                    "score": -2,
+                    "default_score": 0,
+                    "upper_clamp": 5,
+                    "lower_clamp": -5,
+                    "marks": [
+                        {
+                            "points": -2,
+                            "note": "Some commits were too large. %% Less than half of the commits; It subtract points from the detected history %%"
+                        },
+                        {
+                            "points": 0,
+                            "note": "Some of your commits combine unrelated changes which would be better placed into separate commits."
+                        }
+                    ]
+                },
+                {
+                    "title": "GIT: 2. Appropriate commit messages",
+                    "score": -1,
+                    "default_score": 0,
+                    "upper_clamp": 5,
+                    "lower_clamp": -5,
+                    "marks": [
+                        {
+                            "points": -1,
+                            "note": "Some comments are too general or with unclear descriptions (e.g.: `'finished'`, `'cleanup'`, `'some changes`', `'fixed a bug'`). %% On less than half %%"
+                        },
+                        {
+                            "points": 0,
+                            "note": "It is best to keep commit messages short, not least because some tools will truncate them. If you want to give more details, you can break down the message into a short, one-line summary and then a longer block."
+                        },
+                        {
+                            "points": 0,
+                            "note": "By the way, you definitely should include the json file (as you did) if your tests use it, otherwise they won't run!"
+                        }
+                    ]
+                },
+                {
+                    "title": "GIT: 3. Artefacts not included in any commit",
+                    "score": 0,
+                    "default_score": 0,
+                    "upper_clamp": 5,
+                    "lower_clamp": -5,
+                    "marks": [
+                        {
+                            "points": 0,
+                            "note": "%% All good %%"
+                        }
+                    ]
+                },
+                {
+                    "title": "STRUCTURE: 1. Load - (a) Using the right library to read it",
+                    "score": 0,
+                    "default_score": 0,
+                    "upper_clamp": 1,
+                    "lower_clamp": -1,
+                    "marks": [
+                        {
+                            "points": 0,
+                            "note": "%% All good %%"
+                        },
+                        {
+                            "points": 0,
+                            "note": "jsonschema is not standard python library so can't be used for this submission"
+                        }
+                    ]
+                },
+                {
+                    "title": "STRUCTURE: 1. Load - (b) Checks the file follows the right schema",
+                    "score": 0,
+                    "default_score": 0,
+                    "upper_clamp": 2,
+                    "lower_clamp": -2,
+                    "marks": [
+                        {
+                            "points": 0,
+                            "note": "%% All good %%"
+                        }
+                    ]
+                },
+                {
+                    "title": "STRUCTURE: 1. Load - (c) Returns a Python object to be used in the other functions",
+                    "score": -1,
+                    "default_score": 0,
+                    "upper_clamp": 1,
+                    "lower_clamp": -1,
+                    "marks": [
+                        {
+                            "points": -1,
+                            "note": "exception occured"
+                        }
+                    ]
+                },
+                {
+                    "title": "STRUCTURE: 2. Evolution of cases - (a) The return object is as required.",
+                    "score": 0,
+                    "default_score": 0,
+                    "upper_clamp": 1,
+                    "lower_clamp": -1,
+                    "marks": [
+                        {
+                            "points": 0,
+                            "note": "Exception occurred"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

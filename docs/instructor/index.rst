@@ -2,8 +2,8 @@
 Instructor Guide
 ================
 
-Requests and Create Course
-==========================
+Request and Create Course
+=========================
 
 
 Create assignment
@@ -59,7 +59,74 @@ directories for each submission (with the student id), and each containing two f
 ``<studentId>_automated.json`` and ``<studentId>_manual.json``.
 
 
+Combine grades
+--------------
 
+To combine the automated and manual grades we need to decide how (i.e., which
+questions are "the same", what weight has to be produced to the marks, etc.).
+This decision is encoded in the configuration YAML file that you may have used
+to generate the rubric, its content is like this shown below. Note, that some
+questions has a ``manual`` or ``auto`` factor. These are the factor multiplied
+to the manual or auto marks to obtain the real grade (this is done because
+Submitty can only jump on 0.5 steps).
+
+.. code-block:: yaml
+
+   meta:
+     department: "Department name"
+     course: "Module name"
+     course_code: "ModCode001"
+     lecturers:
+       - "Clare Green"
+       - "John Smith"
+     title: "Coursework title"
+     description: >-
+       This assignment ...
+     dates:
+       handed: May 21st, 2025
+       deadline: July 2nd, 2025
+     marks: 100
+     submitty_type: "assignment"
+     submitty_id: cw1
+   sections:
+     section1:
+       title: "First section"
+       description: "what's about"
+       marks: 10
+       stitle: "submitty title"
+       remove: "SECT 1" # What to remove from submitty title
+       Question 1:
+         title: "SECT 1: a. the part of numbers"
+         marks: 6
+         manual: 6
+         auto: 0
+       Question 2:
+         title: "SECT 1: b. the part of letters"
+         marks: 4
+         manual: 0
+         auto: 4
+     section2:
+       title: "Second section"
+       description: "what's difficult"
+       marks: 7
+       stitle: "submitty title"
+       remove: "SECT 1" # What to remove from submitty title
+       Question 1:
+         title: "SECT 1: a. the part of numbers"
+         marks: 3
+         manual: 6
+         auto: 0
+         manual_factor: 0.5
+       Question 2:
+         title: "SECT 1: b. the part of letters"
+         marks: 4
+         manual: 2
+         auto: 4
+         auto_factor: 0.5
+
+
+
+With the config file we can proceed to combine the automate and manual grades.
 
 
 

@@ -1,0 +1,102 @@
+{
+    "automatic_grading_total": 5,
+    "nonhidden_automatic_grading_total": 5,
+    "testcases": [
+        {
+            "autochecks": [
+                {
+                    "actual_file": "test01/GITCHECKED",
+                    "description": "git hasn't been used"
+                },
+                {
+                    "actual_file": "test01/GITHISTORY",
+                    "description": "GITHISTORY"
+                },
+                {
+                    "actual_file": "test01/STDOUT.txt",
+                    "description": "Standard Output (STDOUT.txt)",
+                    "messages": [
+                        {
+                            "message": "WARNING: This file should be empty",
+                            "type": "warning"
+                        }
+                    ]
+                }
+            ],
+            "points_awarded": 3,
+            "test_name": "Test 1 Uncompress, cleaning and setup - GIT: (a) Git repository",
+            "testcase_message": "Compilation Errors and/or Warnings."
+        },
+        {
+            "autochecks": [
+                {
+                    "actual_file": "test02/SUBOUT_LIBRARY.py",
+                    "description": "SUBOUT_LIBRARY.py"
+                }
+            ],
+            "points_awarded": 1,
+            "test_name": "Test 2 STRUCTURE: 1. Load - (a) Using the right library to read it"
+        },
+        {
+            "autochecks": [
+                {
+                    "actual_file": "test03/SUBOUT_02_02_c_pop_long_bad.out",
+                    "description": "SUBOUT_02_02_c_pop_long_bad.out",
+                    "messages": [
+                        {
+                            "message": "ERROR: This file should not be empty!",
+                            "type": "failure"
+                        }
+                    ]
+                }
+            ],
+            "points_awarded": 1,
+            "test_name": "Test 3 STRUCTURE: 1. Load - (b) Checks the file follows the right schema"
+        },
+        {
+            "autochecks": [
+                {
+                    "actual_file": "test04/SUBOUT_object.out",
+                    "description": "SUBOUT_object.out"
+                }
+            ],
+            "points_awarded": 0,
+            "test_name": "Test 4 STRUCTURE: 1. Load - (c) Returns a Python object to be used in the other functions"
+        },
+        {
+            "autochecks": [
+                {
+                    "actual_file": "test05/SUBOUT_object.out",
+                    "description": "SUBOUT_object.out",
+                    "messages": [
+                        {
+                            "message": "ERROR: This file should be empty!",
+                            "type": "failure"
+                        }
+                    ]
+                },
+                {
+                    "actual_file": "test05/STDOUT.txt",
+                    "description": "Standard Output (STDOUT.txt)",
+                    "messages": [
+                        {
+                            "message": "WARNING: This file should be empty",
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "actual_file": "test05/execute_logfile.txt",
+                    "description": "Execution Logfile"
+                }
+            ],
+            "points_awarded": 0,
+            "test_name": "Test 5 STRUCTURE: 2. Evolution of cases - (a) The return object is as required."
+        },
+        {
+            "points_awarded": 0,
+            "test_name": "Test 5 Submission Limit",
+            "view_testcase": false
+        }
+    ]
+}
