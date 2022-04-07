@@ -1,0 +1,33 @@
+# https://www.ucl.ac.uk/students/life-ucl/term-dates-and-closures-2020-21
+2020-21:
+  Christmas:
+    # 5:30pm on Friday 18 December 2020
+    start: 19 December 2020
+    # 9:00am on Monday 4 January 2021
+    end: 4 January 2021
+  Easter:
+    # 5:30pm on Thursday 1 April 2021
+    start: 2 April 2021
+    # 9:00am on Monday 12 April 2021
+    end: 12 April 2021
+  Bank_Holidays:
+    -  3 May 2021
+    -  31 May 2021
+    -  30 August 2021
+# https://www.ucl.ac.uk/students/life-ucl/term-dates-and-closures-2021-22
+2021-22:
+  Christmas:
+    # 5:30pm on Wed 22 December 2021
+    start: 23 December 2021
+    # 9:00am on Tuesday 4 January 2022
+    end: 4 January 2022
+  Easter:
+    # 5:30pm on Thursday 12 April 2022
+    start: 13 April 2022
+    # 9:00am on Tuesday 19 April 2022
+    end: 19 April 2022
+  Bank_Holidays:
+    -  2 May 2022
+    -  2 June 2022
+    -  3 June 2022
+    -  29 August 2022
