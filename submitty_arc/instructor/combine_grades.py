@@ -289,7 +289,7 @@ def generate_tex_styles(config, outdir='./'):
     config['meta']['description_tex'] = mdcomment2tex(config['meta']['description'])
 
     if not Path(outdir).exists():
-        Path(outdir).mkdir()
+        Path(outdir).mkdir(parents=True)
 
     for template in ['ucl_mark.sty', 'assignment_details.tex']:
         style = latex_jinja_env.get_template(template)
@@ -362,11 +362,20 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
         with open(csvout, 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["student_id", "grade", "2Nd grade", "2nd grade - maybe"])
-            writer.writerows(map(lambda x: (*x,
-                                            "Yes" if needs_second_mark(x[1], total=assignment_max) else "",
-                                            "Maybe" if x[0] in sample else ""
-                                            ),
+            columns = ["student_id", "grade", "2Nd grade", "2nd grade - maybe"]
+            if assignment_max != 100:
+                columns.insert(2, "total grade")
+            writer.writerow(columns)
+
+            def add_extra_columns(items):
+                items = list(items)
+                if assignment_max != 100:
+                    items.append(round(items[-1] * 100 / assignment_max, 2))
+                items.append("Yes" if needs_second_mark(items[1], total=assignment_max) else "")
+                items.append("Maybe" if items[0] in sample else "")
+                return tuple(items)
+
+            writer.writerows(map(add_extra_columns,
                                  grades_sorted.items()))
 
 
