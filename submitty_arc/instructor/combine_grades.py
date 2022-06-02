@@ -328,11 +328,12 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     grades = {}
     for i,student_id in enumerate(results_path.iterdir()):
-        # skip if one of the directories is the output directory.
-        if results_path / student_id == Path(outdir):
+        student = student_id.name
+
+        # skip if one of the directories is the output directory, or the directory doesn't contain automated marks
+        if results_path / student_id == Path(outdir) or not (student_id / f'{student}_automated.json').is_file():
             continue
         if student_id.is_dir():
-            student = student_id.name
             penalty = penalties_dict.get(student, None)
             std_assignment = Assignment(config)
             std_assignment.load_results(student_id / f'{student}_automated.json',
