@@ -126,7 +126,14 @@ Submitty can only jump on 0.5 steps).
 
 
 
-With the config file we can proceed to combine the automate and manual grades.
+If you've got a ``penalties.csv`` file recording manual interventions (like
+fixing git repositories, variables names, etc) to make it run, then that file
+should have three columns named: ``submission``, ``points`` and ``reason``.
+Where the values in ``points`` are "penalties" if they are negative numbers.
+
+With the config file and the optional penalties one we can proceed to combine
+the automate and manual grades.
+
 This is done with the ``grades-combine`` command. For example:
 
 

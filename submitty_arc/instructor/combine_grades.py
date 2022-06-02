@@ -14,6 +14,7 @@ import random
 
 import jinja2
 import yaml
+import pandas as pd
 
 from ..utils.md2tex import mdcomment2tex
 
@@ -316,10 +317,11 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     penalties_dict = {}
     if penalties:
-        with open(penalties, 'r') as penalties_file:
-            penalties_reader = csv.reader(penalties_file, delimiter=',')
-            for row in penalties_reader:
-                penalties_dict[row[0]] = tuple(row[1:])
+        penalties_df = pd.read_csv(penalties)
+        penalties_group = penalties_df.groupby('submission_id').agg({'points': sum, 'reason': ''.join})
+        penalties_dict = {}
+        for row_ind, row in penalties_group.iterrows():
+            penalties_dict[str(row.name)] = (row['points'], row['reason'])
 
     grades = {}
     for i,student_id in enumerate(results_path.iterdir()):
