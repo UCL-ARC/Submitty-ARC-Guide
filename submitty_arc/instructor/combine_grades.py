@@ -292,7 +292,10 @@ def generate_tex_styles(config, outdir='./'):
         with open(Path(outdir) / template, 'w') as texfile:
             texfile.write(style.render(meta=config['meta']))
 
-    for extra_file in glob.glob(latex_jinja_env.loader.searchpath[0] + '/*[pdf,lco]'):
+    extensions = ['.pdf', '.lco']
+    for extra_file in glob.glob(latex_jinja_env.loader.searchpath[0] + '/*'):
+        if not Path(extra_file).suffix in extensions:
+            continue
         extra_file = Path(extra_file)
         shutil.copyfile(extra_file, Path(outdir) / extra_file.name)
 
