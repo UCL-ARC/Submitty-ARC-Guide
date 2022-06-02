@@ -127,8 +127,8 @@ class Assignment:
         self.Sections['Penalty'] = Section(penalty_section)
         q = self.Sections['Penalty'].Questions[1]
         q._conversion = 1
-        q.set_points(0, int(penalty[0]))
-        q.add_comments(texify_comments([penalty[1]]))
+        q.set_points(0, float(penalty[0]))
+        q.add_comments(penalty[1])
 
     def load_results(self, auto, manual, penalty=None):
         auto_results = Auto_grad(auto)
