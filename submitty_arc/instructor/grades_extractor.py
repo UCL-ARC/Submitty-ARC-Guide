@@ -36,11 +36,11 @@ def run_it():
     parser.add_argument('--course', '-c', default='mphy0021', help='Course name as the directory in your home')
     parser.add_argument('--assignment', '-a', default='gamelife', help='assignment you want to collect')
     parser.add_argument('--instructor', '-i', default=getpass.getuser(), help='Instructor user')
-    parser.add_argument('--outdir', '-o', default='.', help='where the output directory will be created, it will create a "results_{assignment}" directory')
+    parser.add_argument('--outdir', '-o', default='.', help='where the output directory will be created, it will create a "results_{course}_{assignment}" directory')
     args = parser.parse_args()
 
     outdir = Path(args.outdir)
-    outpath = outdir / f"results_{args.assignment}"
+    outpath = outdir / f"results_{args.course}_{args.assignment}"
     outpath.mkdir(parents=True)
 
     students = list_students(args.instructor, args.course, args.assignment)

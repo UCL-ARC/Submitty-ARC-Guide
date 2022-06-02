@@ -50,11 +50,11 @@ process it.
 
 .. code-block:: bash
 
-   local$ rsync -azvh submitty:~/results_<assignments>.tar.gz .
-   local$ tar jxvf results_<assignment>.tar.bz2
+   local$ rsync -azvh submitty:~/results_<course>__<assignments>.tar.bz2 .
+   local$ tar jxvf results_<course>_<assignment>.tar.bz2
 
 
-Now in your local computer you'd have a directory ``results_<assignment>`` containing
+Now in your local computer you'd have a directory ``results_<course>_<assignment>`` containing
 directories for each submission (with the student id), and each containing two files:
 ``<studentId>_automated.json`` and ``<studentId>_manual.json``.
 
