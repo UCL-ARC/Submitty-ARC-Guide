@@ -346,16 +346,17 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     # sort by grades
     if second_mark:
+        assignment_max = config['meta']['marks']
         grades_sorted = dict(sorted(grades.items(), key=lambda x: x[1]))
         min2nd_mark = max(5, round(len(grades_sorted) * 0.1))
-        fix2nd_mark = len(list(filter(lambda x: needs_second_mark(x), grades_sorted.values())))
+        fix2nd_mark = len(list(filter(lambda x: needs_second_mark(x, total=assignment_max), grades_sorted.values())))
         extra_2nd_mark = max(min2nd_mark - fix2nd_mark, 0)
         print(f"{min2nd_mark=}, {fix2nd_mark=}, {extra_2nd_mark=}")
 
         sample = [""]
         extra_2nd_mark = False
         if extra_2nd_mark:
-            sample = random.sample([x[0] for x in filter(lambda x: not needs_second_mark(x[1]),
+            sample = random.sample([x[0] for x in filter(lambda x: not needs_second_mark(x[1], total=assignment_max),
                                                          grades_sorted.items())],
                                    extra_2nd_mark)
 
@@ -363,14 +364,19 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
             writer = csv.writer(f)
             writer.writerow(["student_id", "grade", "2Nd grade", "2nd grade - maybe"])
             writer.writerows(map(lambda x: (*x,
-                                            "Yes" if needs_second_mark(x[1]) else "",
+                                            "Yes" if needs_second_mark(x[1], total=assignment_max) else "",
                                             "Maybe" if x[0] in sample else ""
                                             ),
                                  grades_sorted.items()))
 
 
-def needs_second_mark(mark):
-    return mark < 50 or round(mark) in [59, 60, 69, 70, 55, 65, 85]
+def needs_second_mark(mark, total=100):
+    """
+    Provides whether a particular submission is in the provided range that needs second marking
+    """
+    edge = total / 2.
+    limits = [ round(l * total / 100) for l in [59, 60, 69, 70, 55, 65, 85]]
+    return mark < edge or round(mark) in limits
 
 
 
