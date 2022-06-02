@@ -11,6 +11,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 import shutil
 import random
+import warnings
 
 import jinja2
 import yaml
@@ -168,7 +169,9 @@ class Assignment:
             self.__create_penalty_sect(penalty)
 
         auto_components = {qtitle:points for qtitle, points in auto_results.components.items() if points != 0}
-        assert len(auto_components) == 0, f"Not all auto results have been used: {auto_components=}"
+        auto_used = len(auto_components) == 0
+        if not auto_used:
+            warnings.warn(f"Not all auto results have been used: {auto_components=}")
         assert len(manual_results.components) == 0, f"Not all manual results have been used: {manual_results.components=} "
         self.overall_comments = manual_results.comments
 
