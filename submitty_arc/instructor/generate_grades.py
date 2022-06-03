@@ -182,8 +182,11 @@ def runall(moodle_csv, marks_csv, due_date=None, outdir='.', group=False):
         replacement = {'wg': 'Working Group ', 'aud': 'Aud'}
         generated['student_id'] = generated['student_id'].replace(replacement, regex=True)
 
+    # extract the correct grade column
+    final_grade = 'total grade' if 'total grade' in generated.columns else 'grade'
+
     # convert marks to dictionary:
-    grades = {v['student_id']: round(v['grade'],1) for idx, v in generated.iterrows()}
+    grades = {v['student_id']: round(v[final_grade],1) for idx, v in generated.iterrows()}
 
     # Update original grades
     if group:
