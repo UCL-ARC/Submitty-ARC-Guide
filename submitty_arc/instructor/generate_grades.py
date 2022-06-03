@@ -203,8 +203,12 @@ def runall(moodle_csv, marks_csv, due_date=None, outdir='.', group=False):
         student_id = int(row['Identifier'].split()[1])
         if student_id in grades:
             mark = grades.get(student_id)
-        else:
+        elif 'Group' in row.index:
             mark = grades.get(row['Group'])
+        else:
+            if not "No submission" in row['Status']:
+                print(f"📢 {student_id} doesn't has a grade")
+            return None
         delay_c = get_delay(row['Status'])
         delay = get_delay_date(row['Last modified (submission)'], row['Due date'])
         print(delay_c, "=====", delay, "===", delay_c == delay)
