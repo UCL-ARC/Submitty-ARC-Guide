@@ -17,8 +17,12 @@
 
 \placetextbox{0.85}{0.8}{{\Large Total mark:} \\
   \entrylocationstyle{\Huge \VAR{'{0:0.2f}'.format(total)} }
-                     {\Huge/}\entrydatestyle{\Huge \VAR{meta['marks']} } }
-
+                     {\Huge/}\entrydatestyle{\Huge \VAR{meta['marks']} }
+\BLOCK{ if meta['marks'] != 100 }
+\\
+\entrylocationstyle{\Large \VAR{'{0:0.2f}'.format(total * 100 / meta['marks'])}\% }
+\BLOCK{ endif }
+}
 
 \vspace{0.6cm}
 Marking legend:

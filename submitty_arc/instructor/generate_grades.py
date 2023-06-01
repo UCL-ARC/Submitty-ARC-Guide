@@ -182,8 +182,11 @@ def runall(moodle_csv, marks_csv, due_date=None, outdir='.', group=False):
         replacement = {'wg': 'Working Group ', 'aud': 'Aud'}
         generated['student_id'] = generated['student_id'].replace(replacement, regex=True)
 
+    # extract the correct grade column
+    final_grade = 'total grade' if 'total grade' in generated.columns else 'grade'
+
     # convert marks to dictionary:
-    grades = {v['student_id']: round(v['grade'],1) for idx, v in generated.iterrows()}
+    grades = {v['student_id']: round(v[final_grade],1) for idx, v in generated.iterrows()}
 
     # Update original grades
     if group:
@@ -200,8 +203,12 @@ def runall(moodle_csv, marks_csv, due_date=None, outdir='.', group=False):
         student_id = int(row['Identifier'].split()[1])
         if student_id in grades:
             mark = grades.get(student_id)
-        else:
+        elif 'Group' in row.index:
             mark = grades.get(row['Group'])
+        else:
+            if not "No submission" in row['Status']:
+                print(f"📢 {student_id} doesn't has a grade")
+            return None
         delay_c = get_delay(row['Status'])
         delay = get_delay_date(row['Last modified (submission)'], row['Due date'])
         print(delay_c, "=====", delay, "===", delay_c == delay)

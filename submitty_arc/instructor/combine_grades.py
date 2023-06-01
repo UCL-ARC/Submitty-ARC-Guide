@@ -11,9 +11,11 @@ from pathlib import Path
 from argparse import ArgumentParser
 import shutil
 import random
+import warnings
 
 import jinja2
 import yaml
+import pandas as pd
 
 from ..utils.md2tex import mdcomment2tex
 
@@ -167,7 +169,9 @@ class Assignment:
             self.__create_penalty_sect(penalty)
 
         auto_components = {qtitle:points for qtitle, points in auto_results.components.items() if points != 0}
-        assert len(auto_components) == 0, f"Not all auto results have been used: {auto_components=}"
+        auto_used = len(auto_components) == 0
+        if not auto_used:
+            warnings.warn(f"Not all auto results have been used: {auto_components=}")
         assert len(manual_results.components) == 0, f"Not all manual results have been used: {manual_results.components=} "
         self.overall_comments = manual_results.comments
 
@@ -285,14 +289,17 @@ def generate_tex_styles(config, outdir='./'):
     config['meta']['description_tex'] = mdcomment2tex(config['meta']['description'])
 
     if not Path(outdir).exists():
-        Path(outdir).mkdir()
+        Path(outdir).mkdir(parents=True)
 
     for template in ['ucl_mark.sty', 'assignment_details.tex']:
         style = latex_jinja_env.get_template(template)
         with open(Path(outdir) / template, 'w') as texfile:
             texfile.write(style.render(meta=config['meta']))
 
-    for extra_file in glob.glob(latex_jinja_env.loader.searchpath[0] + '/*[pdf,lco]'):
+    extensions = ['.pdf', '.lco']
+    for extra_file in glob.glob(latex_jinja_env.loader.searchpath[0] + '/*'):
+        if not Path(extra_file).suffix in extensions:
+            continue
         extra_file = Path(extra_file)
         shutil.copyfile(extra_file, Path(outdir) / extra_file.name)
 
@@ -313,18 +320,20 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     penalties_dict = {}
     if penalties:
-        with open(penalties, 'r') as penalties_file:
-            penalties_reader = csv.reader(penalties_file, delimiter=',')
-            for row in penalties_reader:
-                penalties_dict[row[0]] = tuple(row[1:])
+        penalties_df = pd.read_csv(penalties)
+        penalties_group = penalties_df.groupby('submission_id').agg({'points': sum, 'reason': ''.join})
+        penalties_dict = {}
+        for row_ind, row in penalties_group.iterrows():
+            penalties_dict[str(row.name)] = (row['points'], row['reason'])
 
     grades = {}
     for i,student_id in enumerate(results_path.iterdir()):
-        # skip if one of the directories is the output directory.
-        if results_path / student_id == Path(outdir):
+        student = student_id.name
+
+        # skip if one of the directories is the output directory, or the directory doesn't contain automated marks
+        if results_path / student_id == Path(outdir) or not (student_id / f'{student}_automated.json').is_file():
             continue
         if student_id.is_dir():
-            student = student_id.name
             penalty = penalties_dict.get(student, None)
             std_assignment = Assignment(config)
             std_assignment.load_results(student_id / f'{student}_automated.json',
@@ -337,31 +346,46 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
 
     # sort by grades
     if second_mark:
+        assignment_max = config['meta']['marks']
         grades_sorted = dict(sorted(grades.items(), key=lambda x: x[1]))
         min2nd_mark = max(5, round(len(grades_sorted) * 0.1))
-        fix2nd_mark = len(list(filter(lambda x: needs_second_mark(x), grades_sorted.values())))
+        fix2nd_mark = len(list(filter(lambda x: needs_second_mark(x, total=assignment_max), grades_sorted.values())))
         extra_2nd_mark = max(min2nd_mark - fix2nd_mark, 0)
         print(f"{min2nd_mark=}, {fix2nd_mark=}, {extra_2nd_mark=}")
 
         sample = [""]
         extra_2nd_mark = False
         if extra_2nd_mark:
-            sample = random.sample([x[0] for x in filter(lambda x: not needs_second_mark(x[1]),
+            sample = random.sample([x[0] for x in filter(lambda x: not needs_second_mark(x[1], total=assignment_max),
                                                          grades_sorted.items())],
                                    extra_2nd_mark)
 
         with open(csvout, 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["student_id", "grade", "2Nd grade", "2nd grade - maybe"])
-            writer.writerows(map(lambda x: (*x,
-                                            "Yes" if needs_second_mark(x[1]) else "",
-                                            "Maybe" if x[0] in sample else ""
-                                            ),
+            columns = ["student_id", "grade", "2Nd grade", "2nd grade - maybe"]
+            if assignment_max != 100:
+                columns.insert(2, "total grade")
+            writer.writerow(columns)
+
+            def add_extra_columns(items):
+                items = list(items)
+                if assignment_max != 100:
+                    items.append(round(items[-1] * 100 / assignment_max, 2))
+                items.append("Yes" if needs_second_mark(items[1], total=assignment_max) else "")
+                items.append("Maybe" if items[0] in sample else "")
+                return tuple(items)
+
+            writer.writerows(map(add_extra_columns,
                                  grades_sorted.items()))
 
 
-def needs_second_mark(mark):
-    return mark < 50 or round(mark) in [59, 60, 69, 70, 55, 65, 85]
+def needs_second_mark(mark, total=100):
+    """
+    Provides whether a particular submission is in the provided range that needs second marking
+    """
+    edge = total / 2.
+    limits = [ round(l * total / 100) for l in [59, 60, 69, 70, 55, 65, 85]]
+    return mark < edge or round(mark) in limits
 
 
 

@@ -50,11 +50,11 @@ process it.
 
 .. code-block:: bash
 
-   local$ rsync -azvh submitty:~/results_<assignments>.tar.gz .
-   local$ tar jxvf results_<assignment>.tar.bz2
+   local$ rsync -azvh submitty:~/results_<course>__<assignments>.tar.bz2 .
+   local$ tar jxvf results_<course>_<assignment>.tar.bz2
 
 
-Now in your local computer you'd have a directory ``results_<assignment>`` containing
+Now in your local computer you'd have a directory ``results_<course>_<assignment>`` containing
 directories for each submission (with the student id), and each containing two files:
 ``<studentId>_automated.json`` and ``<studentId>_manual.json``.
 
@@ -126,7 +126,14 @@ Submitty can only jump on 0.5 steps).
 
 
 
-With the config file we can proceed to combine the automate and manual grades.
+If you've got a ``penalties.csv`` file recording manual interventions (like
+fixing git repositories, variables names, etc) to make it run, then that file
+should have three columns named: ``submission``, ``points`` and ``reason``.
+Where the values in ``points`` are "penalties" if they are negative numbers.
+
+With the config file and the optional penalties one we can proceed to combine
+the automate and manual grades.
+
 This is done with the ``grades-combine`` command. For example:
 
 

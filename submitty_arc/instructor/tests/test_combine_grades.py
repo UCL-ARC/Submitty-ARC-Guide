@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from ..combine_grades import Question, Section, Assignment, Manual_grad, Auto_grad, remove_ta_internal_comments, texify_comments
+from ..combine_grades import Question, Section, Assignment, Manual_grad, Auto_grad, needs_second_mark, remove_ta_internal_comments, texify_comments
 
 TEST_DATA = Path(__file__).parent / 'data'
 yaml_question_sample="""
@@ -121,3 +121,6 @@ def test_texify_comments():
 
 
 # FIXME why I get many decimals?
+
+def test_needs_second_mark():
+    assert needs_second_mark(48, total=70)
