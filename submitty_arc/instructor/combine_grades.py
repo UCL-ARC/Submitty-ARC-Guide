@@ -100,7 +100,10 @@ class Section:
 
     def __check_marks(self):
         questions_marks = sum([q.marks for q in self.Questions.values()])
-        assert self.marks == questions_marks, f"expected total of {self.marks} but got {questions_marks} for section: {self.title}"
+        # Allows for larger or equal sum of marks (they will be capped)
+        assert self.marks <= questions_marks, f"expected total of {self.marks} but got {questions_marks} for section: {self.title}"
+        if self.marks < questions_marks:
+            warnings.warn(f"Note that {questions_marks} > {self.marks} - for {self.title} and is going to be capped.")
 
     @property
     def total(self):
