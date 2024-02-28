@@ -321,7 +321,7 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
     penalties_dict = {}
     if penalties:
         penalties_df = pd.read_csv(penalties)
-        penalties_group = penalties_df.groupby('submission_id').agg({'points': sum, 'reason': ''.join})
+        penalties_group = penalties_df.groupby('submission_id').agg({'points': 'sum', 'reason': ''.join})
         penalties_dict = {}
         for row_ind, row in penalties_group.iterrows():
             penalties_dict[str(row.name)] = (row['points'], row['reason'])
