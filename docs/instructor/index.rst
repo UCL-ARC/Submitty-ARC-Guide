@@ -27,7 +27,7 @@ Collect marks from Submitty
 
 To be able to collect the combine marks from Submitty, first we need to generate
 `Grades summary`_. This is done by clicking "Generate Grade Summaries" under the
-"Grade Reports" page in the left bar menu for the course you want to collect the
+:fab:`chart-bar` "Grade Reports" page in the left bar menu for the course you want to collect the
 marks from. This button doesn't generate anything "visible", it only will tell
 you when was the last time run. In the background, it generates a file for each
 submission that we will use to combine marks and generate feedback reports.
@@ -38,19 +38,27 @@ submission that we will use to combine marks and generate feedback reports.
    won't export the feedback or break down of the marks.
 
 Next step is to collect all the details for each gradeable. For that we need to run
-a script on the Submitty machine. SSH into it and run ``grades_extractor``.
+a script on the Submitty machine. SSH into it and run ``grades-extractor``.
 
 .. code-block:: bash
 
-   submitty$ grades_extractor -c <coursename> -a <assignment>
+   submitty$ grades-extractor -c <coursedirectory> -a <assignment> -o <output>
 
 
-This generates a ``results_<assignment>.tar.bz2`` file. Download that file locally to
+For example, from your home:
+
+.. code-block:: bash
+   submitty:~$ ls
+   2324_comp0233_marking@
+   submitty:~$ grades-extractor -c 2324_comp0233_marking -a cw01 -o ./results/COMP0233/23-24
+
+
+This generates a ``results_<year>_<course>_<assignment>.tar.bz2`` file. Download that file locally to
 process it.
 
 .. code-block:: bash
 
-   local$ rsync -azvh submitty:~/results_<course>__<assignments>.tar.bz2 .
+   local$ rsync -azvh submitty:~/results_<year>_<course>_<assignment>.tar.bz2 .
    local$ tar jxvf results_<course>_<assignment>.tar.bz2
 
 
@@ -65,7 +73,7 @@ Combine grades
 To combine the automated and manual grades we need to decide how (i.e., which
 questions are "the same", what weight has to be produced to the marks, etc.).
 This decision is encoded in the configuration YAML file that you may have used
-to generate the rubric, its content is like this shown below. Note, that some
+to generate the rubric, its content is like what's shown below. Note, that some
 questions has a ``manual`` or ``auto`` factor. These are the factor multiplied
 to the manual or auto marks to obtain the real grade (this is done because
 Submitty can only jump on 0.5 steps).
@@ -124,11 +132,14 @@ Submitty can only jump on 0.5 steps).
          auto: 4
          auto_factor: 0.5
 
+.. note::
+   If you don't have a yaml file, you can generate one using ``rubric-convert`` and
+   answering its questions. Note that at the moment this only works for the manual parts.
 
 
 If you've got a ``penalties.csv`` file recording manual interventions (like
 fixing git repositories, variables names, etc) to make it run, then that file
-should have three columns named: ``submission``, ``points`` and ``reason``.
+should have three columns named: ``submission_id``, ``points`` and ``reason``.
 Where the values in ``points`` are "penalties" if they are negative numbers.
 
 With the config file and the optional penalties one we can proceed to combine
@@ -139,8 +150,23 @@ This is done with the ``grades-combine`` command. For example:
 
 .. code-block:: bash
 
-   local$ grades-combine -r results_<assignments>/ -c config.yaml -o output -s -p penalties.csv
+   local$ grades-combine -r results_<year>_<course>_<assignment>/ -c config_<assignment>.yaml -o output -s -p penalties.csv
 
+
+for example:
+
+.. code-block:: bash
+
+   local$ ls
+   5665793  5665795  5665797  5665799  5665801  5665804
+   local$ ls ..
+   cw1_components.yaml  cw1_penalties.csv  results_2324_ARC0001_cw1
+   local$ grades-combine -r . -c ../cw1_components.yaml -o output -s -p ../cw1_penalties.csv
+   min2nd_mark=5, fix2nd_mark=6, extra_2nd_mark=0
+   local$ ls
+   5665793  5665795  5665797  5665799  5665801  5665804  output
+   local$ ls output
+   5665793.tex  5665795.tex  5665797.tex  5665799.tex  5665801.tex  5665804.tex  results.csv
 
 This command with generate a set of files under the ``output`` directory.
 ``results.csv`` includes the normalised marks and marks which ones need to be
@@ -164,18 +190,19 @@ marking.
 Generate grades
 ---------------
 
-The next step adds the marks to Moodle's worksheet, applying any penalty for
-late submissions.
+The next step adds the marks to Moodle's worksheet.
 
 The command to add the marks to the worksheet is as follows:
 
 .. code-block:: bash
 
-   local$ grades-generate "Grades-CourseCode_YY-YY-Coursework X title-id.csv" results.csv -g -d "Sunday, 20 March 2022, 11:00 PM"
+   local$ grades-generate "Grades-CourseCode_YY-YY-Coursework X title-id.csv" results.csv
 
 
 This file will merge the ``results.csv`` obtained before with the worksheet. It
-does it into two files, with late submission penalties and without them.
+does it into two files, with late submission penalties and without them. The
+CS department takes care of the late submissions penalty, so we only need to care
+about the ``nopenalty.csv`` file.
 
 .. _Grades summary: https://submitty.org/instructor/course_settings/rainbow_grades/#grades-summaries
 .. _second marking: https://www.ucl.ac.uk/academic-manual/chapters/chapter-4-assessment-framework-taught-programmes/section-7-marking-moderation#7.6_
