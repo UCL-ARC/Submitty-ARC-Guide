@@ -100,7 +100,10 @@ class Section:
 
     def __check_marks(self):
         questions_marks = sum([q.marks for q in self.Questions.values()])
-        assert self.marks == questions_marks, f"expected total of {self.marks} but got {questions_marks} for section: {self.title}"
+        # Allows for larger or equal sum of marks (they will be capped)
+        assert self.marks <= questions_marks, f"expected total of {self.marks} but got {questions_marks} for section: {self.title}"
+        if self.marks < questions_marks:
+            warnings.warn(f"Note that {questions_marks} > {self.marks} - for {self.title} and is going to be capped.")
 
     @property
     def total(self):
@@ -135,7 +138,11 @@ class Assignment:
     def load_results(self, auto, manual, penalty=None):
         auto_results = Auto_grad(auto)
         manual_results = Manual_grad(manual, self.meta['submitty_type'], self.meta['submitty_id'])
-        assert auto_results.auto_score == manual_results.auto_score, f"The automatic score doesn't match between the auto ({auto_results.auto_score}) and manual ({manual_results.auto_score}) file for student: {manual_results.student}"
+
+        if not manual_results.missing_sections:
+            assert auto_results.auto_score == manual_results.auto_score, f"The automatic score doesn't match between the auto ({auto_results.auto_score}) and manual ({manual_results.auto_score}) file for student: {manual_results.student}"
+        else:
+            warnings.warn(f"student {manual_results.student} has sections awaiting for marking -{'-'.join(manual_results.missing_sections)}")
         autoscore_set = False
 
         self.meta['student'] = manual_results.student
@@ -163,7 +170,7 @@ class Assignment:
                     question.add_comments(manual_results.components[manualk]['comments'])
                     del manual_results.components[manualk]
                 else:
-                    raise ValueError(f"Not component found for {question.title}")
+                    raise ValueError(f"Not component found for {question.title} - for {self.meta['student']}")
 
         if penalty:
             self.__create_penalty_sect(penalty)
@@ -252,12 +259,18 @@ class Manual_grad:
                                         'upper_clamp': x['upper_clamp'],
                                         } for x in assignment["components"]
                            }
+        self.missing_sections = [x['title'] for x in assignment["components"] if len(x['marks']) == 0]
+        if self.missing_sections:
+            print(self.missing_sections)
         self.__check_manual_addup()
-        self.__check_manual_score(json_file)
+        if not self.missing_sections:
+            self.__check_manual_score(json_file)
 
     def __check_manual_addup(self):
         bad_values = {}
         for comp, values in self.components.items():
+            if comp in self.missing_sections:
+                continue
             received = values['score']
             total = values['default'] + values['add_points']
             if received != min(max(values['lower_clamp'], total), values['upper_clamp']):
@@ -321,7 +334,7 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
     penalties_dict = {}
     if penalties:
         penalties_df = pd.read_csv(penalties)
-        penalties_group = penalties_df.groupby('submission_id').agg({'points': sum, 'reason': ''.join})
+        penalties_group = penalties_df.groupby('submission_id').agg({'points': 'sum', 'reason': ''.join})
         penalties_dict = {}
         for row_ind, row in penalties_group.iterrows():
             penalties_dict[str(row.name)] = (row['points'], row['reason'])
@@ -329,7 +342,7 @@ def generate_marks_students(results_path, yamlconfig, outdir='./', penalties=Non
     grades = {}
     for i,student_id in enumerate(results_path.iterdir()):
         student = student_id.name
-
+        print(student)
         # skip if one of the directories is the output directory, or the directory doesn't contain automated marks
         if results_path / student_id == Path(outdir) or not (student_id / f'{student}_automated.json').is_file():
             continue
@@ -390,7 +403,6 @@ def needs_second_mark(mark, total=100):
 
 
 # TODO
-# Include Overall comments (feedback?)
 # Include overall penalties
 #
 

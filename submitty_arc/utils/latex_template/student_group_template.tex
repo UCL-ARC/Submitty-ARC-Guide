@@ -4,6 +4,18 @@
 %\usepackage[numbers]{natbib}
 \usepackage{multirow}
 
+% allow texttt break into multiple lines - Tex.SE - Steven B. Segletes
+% https://tex.stackexchange.com/a/219497/10934
+\renewcommand{\texttt}[1]{%
+  \begingroup
+  \ttfamily
+  \begingroup\lccode`~=`/\lowercase{\endgroup\def~}{/\discretionary{}{}{}}%
+  \begingroup\lccode`~=`[\lowercase{\endgroup\def~}{[\discretionary{}{}{}}%
+  \begingroup\lccode`~=`.\lowercase{\endgroup\def~}{.\discretionary{}{}{}}%
+  \catcode`/=\active\catcode`[=\active\catcode`.=\active
+  \scantokens{#1\noexpand}%
+  \endgroup
+}
 
 \begin{document}
 
