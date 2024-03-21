@@ -192,7 +192,7 @@ def runall(moodle_csv, marks_csv, due_date=None, outdir='.', group=False):
     if group:
         original['Grade'] = original.apply(lambda row: grades.get(row[moodle_column]), axis=1)
     else:
-        original['Grade'] = original.apply(lambda row: grades.get(row['Identifier'].split()[1]), axis=1)
+        original['Grade'] = original.apply(lambda row: grades.get(int(row['Identifier'].split()[1])), axis=1)
 
     no_penalty = Path(outdir) / f'{moodle_csv[:-4]}_nopenalty.csv'
     with_penalty = Path(outdir) / f'{moodle_csv[:-4]}_penalty.csv'
