@@ -5,9 +5,106 @@ Instructor Guide
 Request and Create Course
 =========================
 
+Create a course
+---------------
+
+To have a course, ask one of the admins to do so. You'll need to provide the
+name of the course, the username, full name and ssh-keys for the instructors and
+the username and full name of any TA that will help with grading.
+
+
+.. _addStudents:
+
+Add students to your course
+---------------------------
+
+Once you've got your course, you can add your students.
+
+
+.. note::
+   This is explaining how to create students based on submissions ids created by moodle.
+   This mean that the same student may have multiple anonymous ids. That's OK because this is not accessed by students.
+
+
+
+Download the grading worksheet from your assignment in  moodle.
+
+.. code-block:: bash
+   local:~$ moodle2submitty 'Grades-COMP0000-<name assignment>.csv'
+
+
+
+That generates a ``submitty_reg_<date>.csv`` that can be uploaded on the manage students section for the course, via "Upload Classlist".
+
 
 Create assignment
 =================
+
+Under the main course website, click on "New greadeable". On its first tab it needs a title, a unique id within that course (e.g., ``cw1``), its type (normally: ``Students will submit one or more files by direct upload to the Submitty website``) and a category (normally ``assignment``).
+Normally, you'll have some parts to grade it manually, select yes therefore for it.
+
+Then it will ask what the students are allowed to do (the defaults are normally ok as we are not using this to interact with students).
+We are not using Prerequisites either.
+We need, however, to choose an autograding configuration. That's where all the automatic grading actions are defined.
+Look at the :ref:`template provided<autogradingConfig>` and ask for guidance to the maintainers.
+
+Give that file to the administrator (and any other needed ones - docker file, processing and running scripts, ...) so they can put them in the right place for it to be available there.
+The file can be updated after this step. So leave that as default for now and continue to the next step.
+
+If you have a manual grading section, then next will be the rubric.
+You can create the rubric there manually, or import one from a previous year.
+
+Next tab asks who should be doing the grading, "Full Access grader" will give access to the TAs to grade too.
+As we are taking the submissions from moodle they are already anonymised, so we don't need to re-anonnomise them again.
+
+For the dates, we don't need to set any by clicking that the assignment doesn't have a due date.
+
+Now, prepare the config json file and all the other scripts.
+
+
+
+Upload submissions
+==================
+
+We need to download and then upload the submissions to Submitty.
+We've got a script to check the submissions follow the right file names.
+
+.. code-block:: bash
+
+   local$ python utils/check_moodle_submissions.py "." -p '[0-9]{8}\.zip' -s 'structure_dir' --penalties 'penalties.csv'
+
+
+This will try to fix some or tell you which one needs to be fixed.
+Whatever needs fixing manually will require adding that information in the ``penalties.csv`` file.
+
+
+You may want to clean the submissions of artefacts to save space in submitty. To do so, you can run this script:
+
+.. code-block:: bash
+
+   local$ python utils/clean_moodle_submissions.py "." -s 'COMP0000Assignment1' -p '[Bb]uild' '__MACOSX' 'catch2-build' 'catch2-subbuild' 'matplotplusplus/examples' 'matplotplusplus/docs' '.DS_Store'
+
+
+And upload the submissions to submitty.
+
+.. note::
+   The following steps are recommended to do it with only a couple of submissions first to see that everything worked.
+   Then repeat the multisubmission with all of them.
+
+
+.. code-block:: bash
+
+   local$  rsync -azvh submissions submitty:~/
+
+
+Then an admin will need to run the multisubmission script.
+
+
+.. code-block:: bash
+
+   local$ sudo python3 multisubmission.py comp0000_marking 232 cw1 -d submissions/comp0210/2023-2024/01_20240306 -e '.zip'
+
+
 
 
 Grade assignments
@@ -26,7 +123,7 @@ Collect marks from Submitty
 ---------------------------
 
 To be able to collect the combine marks from Submitty, first we need to generate
-`Grades summary`_. This is done by clicking "Generate Grade Summaries" under the
+``Grades summary`_. This is done by clicking "Generate Grade Summaries" under the
 :fab:`chart-bar` "Grade Reports" page in the left bar menu for the course you want to collect the
 marks from. This button doesn't generate anything "visible", it only will tell
 you when was the last time run. In the background, it generates a file for each
