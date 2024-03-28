@@ -30,6 +30,7 @@ Once you've got your course, you can add your students.
 Download the grading worksheet from your assignment in  moodle.
 
 .. code-block:: bash
+
    local:~$ moodle2submitty 'Grades-COMP0000-<name assignment>.csv'
 
 
@@ -123,7 +124,7 @@ Collect marks from Submitty
 ---------------------------
 
 To be able to collect the combine marks from Submitty, first we need to generate
-``Grades summary`_. This is done by clicking "Generate Grade Summaries" under the
+`Grades summary`_. This is done by clicking "Generate Grade Summaries" under the
 :fab:`chart-bar` "Grade Reports" page in the left bar menu for the course you want to collect the
 marks from. This button doesn't generate anything "visible", it only will tell
 you when was the last time run. In the background, it generates a file for each
