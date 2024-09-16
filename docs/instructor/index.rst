@@ -135,6 +135,11 @@ submission that we will use to combine marks and generate feedback reports.
    downloadable CSV Report will provide that for each of the assignments. This
    won't export the feedback or break down of the marks.
 
+.. note::
+   The scripts assume the course has been symlinked into your home directory,
+   e.g. `~/cpptest -> /var/local/submitty/courses/222/cpptest/`. The course
+   folder should be symlinked before running any of the below scripts.
+
 Next step is to collect all the details for each gradeable. For that we need to run
 a script on the Submitty machine. SSH into it and run ``grades-extractor``.
 
