@@ -7,7 +7,7 @@ def extra_latex(text):
 
     latex_mdx = mdx_latex.makeExtension()
     md = markdown.Markdown()
-    latex_mdx.extendMarkdown(md, markdown.__dict__)
+    latex_mdx.extendMarkdown(md)
     return md.convert(text)
 
 def mdcomment2tex(text):
@@ -23,4 +23,5 @@ def mdcomment2tex(text):
     text = text.replace('\cdot', '*')
     text = text.replace('\<', '<')
     text = text.replace('&&', '\&\&')
+    text = text.replace("<root>","").replace("</root>","").replace("\n","")
     return text
