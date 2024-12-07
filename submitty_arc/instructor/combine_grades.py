@@ -41,7 +41,7 @@ def remove_ta_internal_comments(list_comments):
     return list(filter(lambda x: x, [re.sub('^-\s*', '', re.sub('%%.+?%%', '', comment).strip()) for comment in list_comments]))
 
 def texify_comments(list_comments):
-    return mdcomment2tex(" ".join(remove_ta_internal_comments(list_comments)))
+    return mdcomment2tex("\n".join(["- " + com for com in remove_ta_internal_comments(list_comments)]))
 
 
 class Question:

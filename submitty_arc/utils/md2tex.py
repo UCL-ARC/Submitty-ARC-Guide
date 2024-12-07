@@ -11,7 +11,6 @@ def extra_latex(text):
     return md.convert(text)
 
 def mdcomment2tex(text):
-    text = " \\newline ".join([a for a in text.splitlines() if a]) # to also remove empty lines
     pattern_doubleslash = re.compile(r'(?<!\$)\\')
     text = pattern_doubleslash.sub("\\textbackslash", text)
     #text = re.sub(r'\`(?P<code>\W?\w*\W*?)\`', r'\\texttt{\g<code>}',  text) # single words
