@@ -60,7 +60,10 @@ class Question:
         self._comments = []
         self._points_auto = 0
         self._points_manual = 0
-        self._conversion = self.marks / (self.manual * self.manual_factor + self.auto * self.auto_factor)
+        try:
+            self._conversion = self.marks / (self.manual * self.manual_factor + self.auto * self.auto_factor)
+        except ZeroDivisionError:
+            self._conversion = 0
 
     def set_points(self, auto, manual):
         self._points_auto = auto
