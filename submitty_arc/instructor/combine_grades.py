@@ -12,6 +12,7 @@ from argparse import ArgumentParser
 import shutil
 import random
 import warnings
+import math
 
 import jinja2
 import yaml
@@ -118,10 +119,28 @@ class Assignment:
         self.meta = assignment_dict['meta']
         self.groups = assignment_dict.get('groups')
         self.Sections = {sect: Section(sect_val) for sect, sect_val in assignment_dict['sections'].items()}
+        self.meta['will_weight'] = 'practices' in assignment_dict['sections']
         self.__check_marks()
 
+    def __calculate_weight(self):
+        if self.meta['will_weight']:
+            section_practice = self.Sections["practices"].total
+            if section_practice <= 20:
+                weight = 0.4
+            elif section_practice >= 82.5:
+                weight = 1.1
+            else:
+                fx = (section_practice/100 - 0.2) / (0.825 - 0.2)
+                weight = 0.4 + (1.1 - 0.4)*math.exp( (fx - 1)**2 / ((fx - 1)**2 -1) )
+            self.meta['weight'] = weight
+            self.meta['practices'] = section_practice
+    
     def __check_marks(self):
-        sections_marks = sum([s.marks for s in self.Sections.values()])
+        if "practices" in self.Sections:
+            sections_marks = sum(section.marks for section in self.Sections.values() if section.title != "Practices")
+            # TODO: someway to check that the marks of practices adds up. At the moment done through sections.
+        else:
+            sections_marks = sum([s.marks for s in self.Sections.values()])
         assert self.meta['marks'] == sections_marks, f"Expected total of {self.meta['marks']} but got {sections_marks} for this assignment"
 
     def __create_penalty_sect(self, penalty):
@@ -184,7 +203,13 @@ class Assignment:
 
     @property
     def total(self):
-        sects = sum(section.total for section in self.Sections.values())
+
+        if self.meta['will_weight']:
+            self.__calculate_weight()
+            self.meta['no_practice'] = sum(section.total for section in self.Sections.values() if section.title != "Practices") 
+            sects = self.meta['no_practice'] * self.meta['weight']
+        else:
+            sects = sum(section.total for section in self.Sections.values())
         return max(0, min(sects, self.meta['marks']))
 
 

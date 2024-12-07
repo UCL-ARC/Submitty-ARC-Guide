@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 %\usepackage[numbers]{natbib}
 \usepackage{multirow}
+\usepackage{framed}
 
 % allow texttt break into multiple lines - Tex.SE - Steven B. Segletes
 % https://tex.stackexchange.com/a/219497/10934
@@ -34,12 +35,16 @@
 \\
 \entrylocationstyle{\Large \VAR{'{0:0.2f}'.format(total * 100 / meta['marks'])}\% }
 \BLOCK{ endif }
+\BLOCK{ if meta['will_weight'] }
+\\
+\entrylocationstyle{\Large \VAR{'{0:0.2f}'.format(meta['weight'])} $\times$ \VAR{'{0:0.2f}'.format(meta['no_practice'])}}
+\BLOCK{ endif }
 }
 
 \vspace{0.6cm}
 Marking legend:
 
-\framebox[\textwidth][c]{
+\begin{framed}
   \gradingtitle{Title of the grading section}{points received}{total}
   {General notes about this particular section}
   {
@@ -52,7 +57,14 @@ Marking legend:
       }
     \end{gradingitems}
   }{explaining}
-}
+  \BLOCK{ if meta['will_weight'] }
+  Total marks per sections:
+  \begin{itemize}
+  \item Practices:  \VAR{'{0:0.2f}'.format(meta['practices'])} (weight: \VAR{'{0:0.2f}'.format(meta['weight'])})
+  \item Implementation: \VAR{'{0:0.2f}'.format(meta['no_practice'])}
+  \end{itemize}
+  \BLOCK{ endif }
+\end{framed}
 
 \BLOCK{ if feedback }
 \vspace*{.5cm}
