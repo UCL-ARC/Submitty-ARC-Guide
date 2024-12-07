@@ -49,7 +49,8 @@ Marking legend:
   {General notes about this particular section}
   {
     \begin{gradingitems}
-      \gradeit{section being marked}{auto}{manual}{total}{
+      %\gradeit{section being marked}{auto}{manual}{total}
+      \gradeit{section being marked}{}{}{total}{
         Feedback about this section \newline
         Comments here don't necessarily subtract points \newline
         Automatically graded marks either worked or not. Noted if they had to be
@@ -81,20 +82,20 @@ Marking legend:
   { \VAR{ section.description } } % Description of the full section
   {
     \begin{gradingitems}
-      \BLOCK{ for question in section.Questions.values() }
+      \BLOCK{ for question in section.Questions.values() } % can pipe a batch if required
             {\gradeit{ \VAR{ question.title_tex } }
-               { \VAR{ '{0:0.2f}'.format(question.total_auto) } }
-               { \VAR{ '{0:0.2f}'.format(question.total_manual) } }
+               { } %\VAR{ '{0:0.2f}'.format(question.total_auto) }
+               { } %\VAR{ '{0:0.2f}'.format(question.total_manual) }
                { \VAR{ '{0:0.2f}'.format(question.total) } }
                { \VAR{ question.comments } }
-            }
-            \BLOCK{ endfor }
+             }
+      \BLOCK{ endfor }%
     \end{gradingitems}
   }{}
 
   \rule{\textwidth}{1pt}\\
   \vspace{5mm}
-  \BLOCK{ endfor }
+  \BLOCK{ endfor }%
 
 \end{grading}
 
